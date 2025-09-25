@@ -11,15 +11,24 @@ function getEnv() {
     NODE_ENV = 'development',
     PORT = '4000',
     MONGO_URI,
+    MONGO_DB,
+    MONGO_USER,
+    MONGO_PASS,
     CORS_ORIGIN,
   } = process.env;
 
   if (!MONGO_URI) throw new Error('MONGO_URI is required');
+  if (!MONGO_DB) throw new Error('MONGO DB is required');
+  if (!MONGO_USER) throw new Error('MONGO USER is required');
+  if (!MONGO_PASS) throw new Error('MONGO PASS is required');
 
   return {
     nodeEnv: NODE_ENV,
     port: Number(PORT),
     mongoUri: MONGO_URI,
+    dbName: MONGO_DB,
+    user: MONGO_USER,
+    pass: MONGO_PASS,
     corsOrigin: CORS_ORIGIN ?? 'http://localhost:4200',
   } as const;
 }
@@ -27,11 +36,20 @@ function getEnv() {
 const env = getEnv();
 
 // ---- 2) Mongo connection -----------------------------------------------------
-async function connectMongo(uri: string) {
+async function connectMongo(uri: string, dbName: string, user: string, pass: string) {
   // Optional: tweak Mongoose options here for performance/telemetry if needed
   mongoose.set('strictQuery', true);
 
-  await mongoose.connect(uri);
+  // Attempting to connect to mongodb
+  console.log('[db] Connecting to Mongodb');
+
+  await mongoose.connect(uri, {
+    dbName,
+    user,
+    pass,
+    autoIndex: true,
+    serverSelectionTimeoutMS: 5000,
+  });
   // Attach basic listeners (helpful in dev/ops)
   mongoose.connection.on('connected', () => {
     console.log('[db] connected');
@@ -46,7 +64,7 @@ async function connectMongo(uri: string) {
 
 // ---- 3) HTTP server boot -----------------------------------------------------
 async function main() {
-  await connectMongo(env.mongoUri);
+  await connectMongo(env.mongoUri, env.dbName, env.user, env.pass);
 
   const server = http.createServer(app);
 

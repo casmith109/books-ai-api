@@ -9,6 +9,9 @@ import morgan from 'morgan';
 import crypto from 'node:crypto';
 import rateLimit from 'express-rate-limit';
 
+// Routers
+import bookRouter from './routes/book.routes.js';
+
 // Create and configure the Express application
 export const app = express();
 
@@ -46,15 +49,15 @@ app.use(
   })
 );
 
-// ---- 7) Basic rate limiting (tune per needs)
-app.use(
-  rateLimit({
-    windowMs: 60_000,
-    limit: 120, // 120 req/min per IP
-    standardHeaders: true,
-    legacyHeaders: false,
-  })
-);
+// // ---- 7) Basic rate limiting (tune per needs)
+// app.use(
+//   rateLimit({
+//     windowMs: 60_000,
+//     limit: 120, // 120 req/min per IP
+//     standardHeaders: true,
+//     legacyHeaders: false,
+//   })
+// );
 
 // ---- 8) Health endpoints (for k8s, App Platform, uptime monitors)
 app.get('/health', (_req, res) => {
@@ -74,6 +77,8 @@ app.get('/api/v1/hello', (_req, res) => {
 // Example: mount auth, users, etc. (keep routers in feature folders)
 // import { authRouter } from './features/auth/auth.routes.js';
 // app.use('/api/v1/auth', authRouter);
+
+app.use('/v1/books', bookRouter);
 
 // ---- 10) 404 handler (after all routes)
 app.use((_req, res) => {
