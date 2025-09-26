@@ -1,2 +1,5 @@
 notes.md
 .env
+
+dist/
+node_modules/
