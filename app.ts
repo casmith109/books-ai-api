@@ -7,7 +7,6 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import crypto from 'node:crypto';
-import rateLimit from 'express-rate-limit';
 
 // Routers
 import bookRouter from './routes/book.routes.js';
@@ -78,7 +77,7 @@ app.get('/api/v1/hello', (_req, res) => {
 // import { authRouter } from './features/auth/auth.routes.js';
 // app.use('/api/v1/auth', authRouter);
 
-app.use('/v1/books', bookRouter);
+app.use('/api/v1/books', bookRouter);
 
 // ---- 10) 404 handler (after all routes)
 app.use((_req, res) => {
