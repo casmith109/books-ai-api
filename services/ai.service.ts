@@ -5,7 +5,9 @@ export const submitPrompt = async (prompt: string): Promise<string> => {
   try {
     const res = await openai.responses.create({
       model: process.env.OPENAI_MODEL || 'gpt-5-mini',
-      input: prompt
+      input: prompt,
+      reasoning: {effort: 'low '},
+      output_length: 500
     });
     console.log('Response from OpenAI', res);
     // The Responses API returns a unified shape; text lives here:
